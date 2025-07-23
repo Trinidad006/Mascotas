@@ -14,15 +14,19 @@ export async function addHero(heroData) {
     city: heroData.city?.trim().toLowerCase(),
     team: heroData.team?.trim().toLowerCase()
   };
+
+  // Busca duplicados por nombre o alias
   const exists = await Hero.findOne({
-    name: query.name,
-    alias: query.alias,
-    city: query.city,
-    team: query.team
+    $or: [
+      { name: query.name },
+      { alias: query.alias }
+    ]
   });
+
   if (exists) {
     throw new Error('El héroe ya existe');
   }
+
   // Guarda los datos normalizados
   const newHero = new Hero({
     ...heroData,
@@ -31,6 +35,7 @@ export async function addHero(heroData) {
     city: query.city,
     team: query.team
   });
+
   await newHero.save();
   return newHero.toObject();
 }
