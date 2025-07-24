@@ -15,21 +15,30 @@ export async function addHero(heroData) {
     team: heroData.team?.trim().toLowerCase()
   };
 
-  // Busca duplicados por nombre o alias
+  // Si no se proporciona un id, genera uno automáticamente
+  let newId = heroData.id !== undefined ? parseInt(heroData.id) : Date.now();
+
+  // Busca duplicados por nombre, alias o id
   const exists = await Hero.findOne({
     $or: [
       { name: query.name },
-      { alias: query.alias }
+      { alias: query.alias },
+      { id: newId }
     ]
   });
 
   if (exists) {
+    // Si el duplicado es por id, lanza error específico
+    if (exists.id === newId) {
+      throw new Error('El id del héroe ya existe');
+    }
     throw new Error('El héroe ya existe');
   }
 
-  // Guarda los datos normalizados
+  // Guarda los datos normalizados y el id seguro
   const newHero = new Hero({
     ...heroData,
+    id: newId,
     name: query.name,
     alias: query.alias,
     city: query.city,
@@ -41,12 +50,14 @@ export async function addHero(heroData) {
 }
 
 export async function updateHero(id, updatedHero) {
+  // Asegúrate de buscar por el campo id personalizado
   const hero = await Hero.findOneAndUpdate({ id: parseInt(id) }, updatedHero, { new: true });
   if (!hero) throw new Error('Héroe no encontrado');
   return hero;
 }
 
 export async function deleteHero(id) {
+  // Asegúrate de buscar por el campo id personalizado
   const result = await Hero.deleteOne({ id: parseInt(id) });
   if (result.deletedCount === 0) throw new Error('Héroe no encontrado');
   return { message: 'Héroe eliminado' };
