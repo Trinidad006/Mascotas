@@ -5,9 +5,9 @@ const SECRET = 'supersecreto';
 
 export const login = async (req, res) => {
     const { heroId, password } = req.body;
-    if (heroId === 0 && password === 'admin123') {
+    if (heroId === 1 && password === 'admin123') {
         // Login admin
-        const token = jwt.sign({ heroId: 0, role: 'admin' }, SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ heroId: 1, role: 'admin' }, SECRET, { expiresIn: '1h' });
         return res.json({ token });
     }
     // Login usuario normal
