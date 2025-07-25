@@ -27,7 +27,7 @@ const swaggerDocument = {
     description: 'Documentación de la API de Superhéroes'
   },
   servers: [
-    { url: 'http://localhost:3001/api' }
+    { url: 'https://mascotas-xy4h.onrender.com/api' }
   ],
   components: {
     securitySchemes: {
