@@ -9,7 +9,11 @@ connectDB();
 
 const app = express()
 
-app.use(cors()); // Habilita CORS para todas las rutas
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+})); // Habilita CORS para todas las rutas
 app.use(express.json())
 app.use('/api', heroController)
 app.use('/api', petController)
