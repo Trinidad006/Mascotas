@@ -7,4 +7,8 @@ export async function getAllPets() {
 export async function addPet(data) {
   const newPet = new Pet(data);
   return await newPet.save();
+}
+
+export async function deleteAllPets() {
+  return await Pet.deleteMany({});
 } 

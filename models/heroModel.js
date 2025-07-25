@@ -1,18 +1,18 @@
 import mongoose from 'mongoose';
 
-const heroSchema = new mongoose.Schema({
-  id: Number,
+const userSchema = new mongoose.Schema({
+  id: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
   name: String,
-  alias: String,
-  city: String,
-  team: String
+  email: String
 }, {
   toJSON: {
     transform: function(doc, ret) {
       delete ret.__v;
+      delete ret.password; // No exponer la contraseña
       return ret;
     }
   }
 });
 
-export default mongoose.model('Hero', heroSchema); 
+export default mongoose.model('User', userSchema); 

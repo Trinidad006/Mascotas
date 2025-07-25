@@ -1,6 +1,6 @@
 import express from 'express'
 import cors from 'cors'
-import heroController from '../controllers/heroControllers.js'
+import userController from '../controllers/userControllers.js'
 import swaggerUi from 'swagger-ui-express'
 import petController from '../controllers/petControllers.js'
 import { login } from '../controllers/authController.js';
@@ -15,7 +15,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 })); // Habilita CORS para todas las rutas
 app.use(express.json())
-app.use('/api', heroController)
+app.use('/api', userController)
 app.use('/api', petController)
 app.post('/api/login', login)
 

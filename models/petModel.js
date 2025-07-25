@@ -1,11 +1,10 @@
 import mongoose from 'mongoose';
 
 const petSchema = new mongoose.Schema({
-  id: Number,
   name: String,
   type: String,
   superPower: String,
-  heroId: Number,
+  ownerId: { type: String, required: true },
   vida: Object,
   felicidad: Number,
   personalidad: String,

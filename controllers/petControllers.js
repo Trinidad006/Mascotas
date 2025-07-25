@@ -1,26 +1,35 @@
 import express from 'express'
 import * as petService from '../services/petServices.js';
-import { authenticateJWT, authorizeAdmin } from '../middlewares/auth.js';
+import { authenticateJWT } from '../middlewares/auth.js';
 
 const router = express.Router()
 
-router.get('/pets', authenticateJWT, authorizeAdmin, async (req, res) => {
+// Obtener todas las mascotas (solo admin)
+router.get('/pets', authenticateJWT, async (req, res) => {
     try {
-        const pets = await petService.getAllPets();
-        res.json(pets);
+        if (req.user.role === 'admin') {
+            const pets = await petService.getAllPets();
+            return res.json(pets);
+        } else {
+            // Usuario normal: solo ve sus mascotas
+            const pets = await petService.getPetsByOwnerId(req.user.id);
+            return res.json(pets);
+        }
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-router.post('/pets', async (req, res) => {
+// Crear mascota (el ownerId se toma del usuario autenticado)
+router.post('/pets', authenticateJWT, async (req, res) => {
     try {
-        const newPet = await petService.addPet(req.body)
-        res.status(201).json(newPet)
+        const petData = { ...req.body, ownerId: req.user.id };
+        const newPet = await petService.addPet(petData);
+        res.status(201).json(newPet);
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        res.status(500).json({ error: error.message });
     }
-})
+});
 
 router.get('/heroes/:heroId/pets', authenticateJWT, (req, res) => {
     const requestedHeroId = parseInt(req.params.heroId);
@@ -111,4 +120,15 @@ router.delete('/pets/:id', async (req, res) => {
     }
 });
 
-export default router 
+// Eliminar todas las mascotas (solo admin)
+router.delete('/pets', authenticateJWT, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Solo el admin puede eliminar todas las mascotas' });
+    try {
+        await petService.deleteAllPets();
+        res.json({ message: 'Todas las mascotas eliminadas' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+export default router; 

@@ -6,33 +6,17 @@ export async function getAllPets() {
 }
 
 export async function addPet(petData) {
-  // Normaliza los datos para comparar
-  const query = {
-    name: petData.name?.trim().toLowerCase(),
-    type: petData.type?.trim().toLowerCase(),
-    superPower: petData.superPower?.trim().toLowerCase(),
-    heroId: petData.heroId,
-    personalidad: (petData.personalidad || 'normal').trim().toLowerCase()
-  };
-  const exists = await Pet.findOne({
-    name: query.name,
-    type: query.type,
-    superPower: query.superPower,
-    heroId: query.heroId,
-    personalidad: query.personalidad
-  });
-  if (exists) {
-    throw new Error('La mascota ya está registrada');
-  }
-  const newPet = new Pet({
-    ...petData,
-    name: query.name,
-    type: query.type,
-    superPower: query.superPower,
-    personalidad: query.personalidad
-  });
+  const newPet = new Pet(petData);
   await newPet.save();
   return newPet.toObject();
+}
+
+export async function getPetsByOwnerId(ownerId) {
+  return await Pet.find({ ownerId });
+}
+
+export async function deleteAllPets() {
+  return await Pet.deleteMany({});
 }
 
 export async function getPetsByHeroId(heroId) {
